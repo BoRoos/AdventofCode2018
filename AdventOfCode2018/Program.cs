@@ -14,7 +14,8 @@ namespace AdventOfCode2018
             //Day2();
             //Day3();
             //Day4();
-            Day5();
+            //Day5();
+            Day6.execute();
         }
 
         static void Day5()
@@ -54,6 +55,7 @@ namespace AdventOfCode2018
                     {
                         if (Char.ToLower(charlist[i]) == Char.ToLower(charlist[i + 1]) && (int)charlist[i] != (int)charlist[i + 1])
                         {
+                           
                             charlist.RemoveAt(i);
                             charlist.RemoveAt(i);
                             runagain = true;
