@@ -12,7 +12,7 @@ namespace AdventOfCode2018
     {
         public static void execute()
         {
-            var data = File.ReadAllLines(@"c:\temp\inputtest.txt");
+            var data = File.ReadAllLines(@"c:\temp\input.txt");
             var Steps = new Dictionary<string, Step>();
             foreach (var row in data)
             {
@@ -37,19 +37,40 @@ namespace AdventOfCode2018
 
             }
             var Headoflist = from s in Steps where s.Value.Prevlist.Count() == 0 select s;
-            var result = GetPath(Headoflist.First().Value);
-
+            var resultList = GetPath(Headoflist.First().Value, new List<string>());
+            var result = "";
+            foreach(var s  in resultList)
+            {
+                result += s;
+            }
             Console.WriteLine(result);
             Console.ReadKey();
 
         }
-        static string GetPath(Step HeadofList)
+        static List<string> GetPath(Step HeadofList, List<string> done)
+
         {
-            var result = HeadofList.Name;
-            foreach( var nexthead in HeadofList.Followlist)
+            var result = done;
+            result.Add(HeadofList.Name);
+            foreach(var nexthead in HeadofList.Followlist)
             {
-                result += GetPath(nexthead.Value);
+                var okToadd = true;
+                foreach(var prevName in nexthead.Value.Prevlist.Keys)
+                {
+                    if (!done.Contains(prevName)) okToadd = false;
+                }
+                if (okToadd)
+                {
+                    var wrk = GetPath(nexthead.Value, result);
+                    foreach (var step in wrk)
+                    {
+                        if (!result.Contains(step)) result.Add(step);
+                    }
+                }
+                
             }
+            //result.Sort();
+            
             return result;
         }
 
