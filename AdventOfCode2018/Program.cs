@@ -15,7 +15,8 @@ namespace AdventOfCode2018
             //Day3();
             //Day4();
             //Day5();
-            Day6.execute();
+            //Day6.execute();
+            Day7.execute();
         }
 
         static void Day5()
