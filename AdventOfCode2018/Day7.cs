@@ -7,9 +7,9 @@ namespace AdventOfCode2018
 {
     class Day7
     {
-        public static void execute()
+        public static void Execute()
         {
-            var data = File.ReadAllLines(@"c:\temp\input.txt");
+            var data = File.ReadAllLines(@"c:\temp\input7.txt");
             var Steps = new Dictionary<string, Step>();
             foreach (var row in data)
             {
@@ -65,7 +65,7 @@ namespace AdventOfCode2018
             var second = 0;
             while (Headoflist.Count() > 0)
             {
-                Console.Write("Second: " + second);
+                //Console.Write("Second: " + second);
                 var removing = Headoflist.Where(f => f.steptime == 0).ToList();
                 foreach (var head in removing)
                 {
@@ -83,12 +83,12 @@ namespace AdventOfCode2018
 
                 foreach (var worker in Headoflist.OrderBy(o => o.working ? 0 : 1).ThenBy(o => o.Name).Take(5).OrderBy(o=>o.Name))
                 {
-                    Console.Write("\t" + worker.Name);
+                    //Console.Write("\t" + worker.Name);
                     worker.working = true;
                     worker.steptime--;
                 }
 
-                Console.WriteLine("\t" + path);
+                //Console.WriteLine("\t" + path);
                 second++;
             }
             Console.WriteLine(path);

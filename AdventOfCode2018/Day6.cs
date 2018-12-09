@@ -6,9 +6,9 @@ namespace AdventOfCode2018
 {
     class Day6
     {
-        public static void execute()
+        public static void Execute()
         {
-            var data = File.ReadAllLines(@"c:\temp\input.txt");
+            var data = File.ReadAllLines(@"c:\temp\input6.txt");
             var coordlist = new List<Coord>();
             int xmin=1000, xmax=0, ymin=1000, ymax=0;
             foreach (var row in data)
@@ -60,10 +60,10 @@ namespace AdventOfCode2018
                     }
                 }
             }
-            foreach (var c in coordlist)
-            {
-                Console.WriteLine(string.Format("x:{0} y:{1} ClosestNo: {2}", c.X, c.Y, c.ClosestCoords));
-            }
+            //foreach (var c in coordlist)
+            //{
+            //    Console.WriteLine(string.Format("x:{0} y:{1} ClosestNo: {2}", c.X, c.Y, c.ClosestCoords));
+            //}
 
             Console.WriteLine(SizeRegion);
             Console.ReadKey();
