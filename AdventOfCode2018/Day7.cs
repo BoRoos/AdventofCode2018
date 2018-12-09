@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2018
 {
@@ -25,25 +22,76 @@ namespace AdventOfCode2018
                 {
                     Steps.Add(firstname, first);
                 }
-                else first = Steps[firstname];
+                else
+                {
+                    first = Steps[firstname];
+                }
+
                 if (!Steps.ContainsKey(followname))
                 {
                     Steps.Add(followname, follow);
                 }
                 else
+                {
                     follow = Steps[followname];
-                first.Followlist.Add(followname,follow);
-                follow.Prevlist.Add(firstname,first);
+                }
+
+                first.Followlist.Add(followname, follow);
+                follow.Prevlist.Add(firstname, first);
 
             }
-            var Headoflist = from s in Steps where s.Value.Prevlist.Count() == 0 select s;
-            var resultList = GetPath(Headoflist.First().Value, new List<string>());
-            var result = "";
-            foreach(var s  in resultList)
+            var Headoflist = (from s in Steps.Values where s.Prevlist.Count() == 0 select s).ToList();
+            var path = "";
+            while (Headoflist.Count() > 0)
             {
-                result += s;
+                var head = Headoflist.OrderBy(o => o.Name).First();
+                path += head.Name;
+                Headoflist.Remove(head);
+                foreach (var f in head.Followlist)
+                {
+                    if (!f.Value.Prevlist.Where(a => !path.Contains(a.Key)).Any() && !path.Contains(f.Key))
+                    {
+                        Headoflist.Insert(0, f.Value);
+                    }
+                }
+
+
             }
-            Console.WriteLine(result);
+
+            Console.WriteLine(path);
+            // star 2
+            Headoflist = (from s in Steps.Values where s.Prevlist.Count() == 0 select s).ToList();
+            path = "";
+            var second = 0;
+            while (Headoflist.Count() > 0)
+            {
+                Console.Write("Second: " + second);
+                var removing = Headoflist.Where(f => f.steptime == 0).ToList();
+                foreach (var head in removing)
+                {
+                    //Console.WriteLine("Removed: " + head.Name);
+                    path += head.Name;
+                    Headoflist.Remove(head);
+                    foreach (var f in head.Followlist)
+                    {
+                        if (!f.Value.Prevlist.Where(a => !path.Contains(a.Key)).Any() && !path.Contains(f.Key))
+                        {
+                            Headoflist.Insert(0, f.Value);
+                        }
+                    }
+                }
+
+                foreach (var worker in Headoflist.OrderBy(o => o.working ? 0 : 1).ThenBy(o => o.Name).Take(5).OrderBy(o=>o.Name))
+                {
+                    Console.Write("\t" + worker.Name);
+                    worker.working = true;
+                    worker.steptime--;
+                }
+
+                Console.WriteLine("\t" + path);
+                second++;
+            }
+            Console.WriteLine(path);
             Console.ReadKey();
 
         }
@@ -52,37 +100,46 @@ namespace AdventOfCode2018
         {
             var result = done;
             result.Add(HeadofList.Name);
-            foreach(var nexthead in HeadofList.Followlist)
+            foreach (var nexthead in HeadofList.Followlist)
             {
                 var okToadd = true;
-                foreach(var prevName in nexthead.Value.Prevlist.Keys)
+                foreach (var prevName in nexthead.Value.Prevlist.Keys)
                 {
-                    if (!done.Contains(prevName)) okToadd = false;
+                    if (!done.Contains(prevName))
+                    {
+                        okToadd = false;
+                    }
                 }
                 if (okToadd)
                 {
                     var wrk = GetPath(nexthead.Value, result);
                     foreach (var step in wrk)
                     {
-                        if (!result.Contains(step)) result.Add(step);
+                        if (!result.Contains(step))
+                        {
+                            result.Add(step);
+                        }
                     }
                 }
-                
+
             }
-            //result.Sort();
-            
+           
+
             return result;
         }
 
     }
-    class Step {
+    class Step
+    {
         public string Name;
+        public int steptime;
+        public Boolean working = false;
         public SortedList<string, Step> Prevlist = new SortedList<string, Step>();
         public SortedList<string, Step> Followlist = new SortedList<string, Step>();
         public Step(string name)
         {
             Name = name;
-        
+            steptime = name[0] - 65 + 1 + 60;
         }
-}
+    }
 }
