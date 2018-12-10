@@ -19,8 +19,8 @@ namespace AdventOfCode2018
             //Day7.Execute();
             //Day8.Execute();
             //Day9.Execute();
-            Day10.Execute();
-
+            //Day10.Execute();
+            Day11.Execute();
         }
             
         
