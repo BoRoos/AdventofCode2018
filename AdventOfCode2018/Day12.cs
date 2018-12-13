@@ -75,7 +75,7 @@ namespace AdventOfCode2018
 
                 nextpots = GetNextGen(nextpots, origo, rules);
                 key = GetKey(nextpots, origo);
-                Console.WriteLine(CalcResult(nextpots, origo));
+                //Console.WriteLine(CalcResult(nextpots, origo));
             }
             var calc = 50000000000 % generations.Count();
             foreach(var w in generations.Values)
