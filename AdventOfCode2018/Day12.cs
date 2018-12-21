@@ -11,131 +11,61 @@ namespace AdventOfCode2018
         public static void Execute()
         {
             var data = File.ReadAllLines(@"c:\temp\input12.txt");
-            var initialstate = data[0].Split(' ')[2];
-            var pots = new int[2000];
-            var origo = 100;
-
-            
-            for (int i = 0; i < initialstate.Length; i++)
-            {
-                if (initialstate[i] == '#') pots[i+origo] = 1;
-            }
-
-            var rules = new Dictionary<int, int>();
+            string initialstate = data[0].Split(' ')[2];
+            int origo = 0;
+            Dictionary<string, char> rules = new Dictionary<string, char>();
             foreach (var row in data)
             {
                 if (row.Contains("="))
                 {
-                    var pattern = Convert.ToInt32(row.Split()[0].Replace(".","0").Replace("#","1"),2);
-                    var value = (row.Split()[2] == "#" ? 1 : 0);
-                    rules.Add(pattern, value);
+                    string pattern = row.Split()[0];
+                    var value = row.Split()[2][0];
+                    if (value=='#') rules.Add(pattern, value);
                 }
             }
-
-            var generations = new Dictionary<string, PotGeneration>();
-            var pg = new PotGeneration {
-                gen = 0,
-                value = CalcResult(pots, origo),
-                key = GetKey(pots, origo),
-                pots = pots
-            };
-
-            generations.Add(pg.key, pg);
-            var nextpots = pots;
-            var currentgen = 0;
-            for(  currentgen=1; currentgen<=20; currentgen++)
+            string currentpots = initialstate;
+            int[] scores = new int[2000];
+            for (var gen = 0; gen < 1000; gen++)
             {
-                nextpots = GetNextGen(nextpots, origo, rules);
-                pg = new PotGeneration
-                {
-                    gen = currentgen,
-                    value = CalcResult(nextpots, origo),
-                    key = GetKey(nextpots, origo),
-                    pots = nextpots
-                };
-                generations.Add(GetKey(nextpots, origo), pg);
+                var score = CalcResult(currentpots, origo);
+                //if (gen > 0) Console.WriteLine(score + " " + (score - scores[gen - 1]));
+                scores[gen] = score;
+                currentpots = "...." + currentpots + "....";
+                origo += 4;
+                currentpots = GetNextGen(currentpots, rules);
             }
-            var result = CalcResult(nextpots,origo);
-            
-            Console.WriteLine(result);
-                        
-            nextpots = GetNextGen(nextpots, origo, rules);
-            var key = GetKey(nextpots, origo);
-            
-            while (!generations.ContainsKey(key))
-            {
-                pg = new PotGeneration
-                {
-                    gen = ++currentgen,
-                    value = CalcResult(nextpots, origo),
-                    key = GetKey(nextpots, origo),
-                    pots = nextpots
-                };
-                generations.Add(GetKey(nextpots, origo), pg);
+            Console.WriteLine(scores[20]);
+            long finalscore = (50000000000 - 999) * (scores[999] - scores[998]) + scores[999];
+            Console.WriteLine(finalscore);
 
-                nextpots = GetNextGen(nextpots, origo, rules);
-                key = GetKey(nextpots, origo);
-                //Console.WriteLine(CalcResult(nextpots, origo));
-            }
-            var calc = 50000000000 % generations.Count();
-            foreach(var w in generations.Values)
-            {
-                Console.WriteLine(w.gen + ":" + w.value);
-            }
-
-
-            Console.WriteLine(CalcResult(nextpots, origo));
-                                         
             Console.ReadKey();
 
         }
-        static int[] GetNextGen(int[] pots, int origo, Dictionary<int,int> rules  )
+        static string GetNextGen(string pots, Dictionary<string, char> rules)
         {
-            var NextGen = new int[2000];
-            for (var i = -98 + origo; i < 1000 + origo; i++)
+            StringBuilder results = new StringBuilder(pots.Length);
+            results.Append("..");
+
+            for (int i = 2; i < pots.Length - 2; i++)
             {
-                var key = pots[i - 2] * 16 + pots[ i - 1] * 8 + pots[ i] * 4 + pots[ i + 1] * 2 + pots[ i + 2] * 1;
-                var value = 0;
-                if (rules.ContainsKey(key)) value = rules[key];
-                NextGen[i] = value;
-                
+                string key = new string(new char[] { pots[i - 2], pots[i - 1], pots[i], pots[i + 1], pots[i + 2] });
+
+                if (rules.ContainsKey(key)) results.Append(rules[key]);
+                else results.Append(".");
+
             }
-            return NextGen;
+            results.Append("..");
+            return results.ToString();
         }
-        static int CalcResult(int[] pots, int origo)
+        static int CalcResult(string pots, int origo)
         {
             var result = 0;
-            for (var i = -98 + origo; i < 1000 + origo; i++)
+
+            for (var i = 0; i < pots.Length; i++)
             {
-                result += pots[i] * (i - origo);
+                result += pots[i] == '#' ? i - origo : 0;
             }
             return result;
         }
-        static Boolean GenIsEqual(int[] curgen, int[] nextgen, int origo)
-        {
-            
-            for (var i = -98 + origo; i < 1000 + origo; i++)
-            {
-                if (curgen[i] != nextgen[i]) return false;
-            }
-            return true;
-        }
-        static string GetKey(int[] pots, int origo)
-        {
-            var result = new StringBuilder(2000);
-            for (var i = -98 + origo; i < 1000 + origo; i++)
-            {
-                result.Append(pots[i] == 1 ? "#" : ".");
-            }
-            return result.ToString();
-        }
-    }
-    class PotGeneration
-    {
-        public int gen;
-        public int value;
-        public string key;
-        public int[] pots;
-    }
-
+    }    
 }
