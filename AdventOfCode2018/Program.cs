@@ -24,8 +24,10 @@ namespace AdventOfCode2018
             //Day12.Execute();
             //Day13.Execute();
             //Day14.Execute();
-            Day15.Execute();
-
+            //Day15.Execute();
+            //Day16.Execute();
+            //new Day17().Execute();
+            new Day25().Execute();
         }
             
         
